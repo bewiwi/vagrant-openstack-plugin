@@ -103,6 +103,11 @@ module VagrantPlugins
       # signed ssl certificate
       attr_accessor :ssl_verify_peer
 
+      # Prefer interface who use for nfs connection
+      #
+      # @return [String]
+      attr_accessor :nfs_host_ip
+
       def initialize
         @api_key  = UNSET_VALUE
         @endpoint = UNSET_VALUE
@@ -125,6 +130,7 @@ module VagrantPlugins
         @region = UNSET_VALUE
         @proxy = UNSET_VALUE
         @ssl_verify_peer = UNSET_VALUE
+        @nfs_host_ip = UNSET_VALUE
       end
 
       def finalize!
@@ -157,6 +163,7 @@ module VagrantPlugins
         @region = nil if @region == UNSET_VALUE
         @proxy = nil if @proxy == UNSET_VALUE
         @ssl_verify_peer = nil if @ssl_verify_peer == UNSET_VALUE
+        @nfs_host_ip = nil if @nfs_host_ip == UNSET_VALUE
       end
 
       def validate(machine)

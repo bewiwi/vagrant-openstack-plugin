@@ -140,7 +140,8 @@ This provider exposes quite a few provider-specific configuration options:
 * `ssl_verify_peer` - sets the ssl_verify_peer on the underlying excon connection - useful for self signed certs etc.
 * `floating_ip` - Floating ip. The floating IP to assign for this instance. If
   set to :auto, then this assigns any available floating IP to the instance.
-
+* `nfs_host_ip` - the prefered ip of the host to be use for nfs connection 
+* 
 These can be set like typical provider-specific configuration:
 
 ```ruby
@@ -163,13 +164,8 @@ the OpenStack server.
 
 ## Synced Folders
 
-There is minimal support for synced folders. Upon `vagrant up`,
-`vagrant reload`, and `vagrant provision`, the OpenStack provider will use
-`rsync` (if available) to uni-directionally sync the folder to
-the remote machine over SSH.
+There is full support for vagrant sharing system. [Rsync](http://docs.vagrantup.com/v2/synced-folders/rsync.html), [NFS](http://docs.vagrantup.com/v2/synced-folders/nfs.html) ar supported and [SMB](http://docs.vagrantup.com/v2/synced-folders/smb.html) probably work
 
-This is good enough for all built-in Vagrant provisioners (shell,
-chef, and puppet) to work!
 
 ## Command
 

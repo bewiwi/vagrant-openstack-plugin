@@ -16,6 +16,8 @@ module VagrantPlugins
             if env[:result]
               b1.use ConnectOpenStack
               b1.use DeleteServer
+              b1.use PrepareNFSValidIds
+              b1.use SyncedFolderCleanup
             else
               b1.use MessageWillNotDestroy
             end
@@ -77,7 +79,6 @@ module VagrantPlugins
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
-          b.use SyncFolders
           b.use WarnNetworks
           b.use SetHostname
         end
@@ -86,17 +87,24 @@ module VagrantPlugins
       # This action is called when `vagrant up` is executed.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
-          b.use HandleBoxUrl
+          b.use HandleBox
           b.use ConfigValidate
           b.use Call, IsCreated do |env, b1|
             unless env[:result]
               b1.use action_prepare_boot
               b1.use ConnectOpenStack
               b1.use CreateServer
+
+              b1.use PrepareNFSValidIds
+              b1.use SyncedFolderCleanup
+              b1.use SyncedFolders
+              b1.use PrepareNFSSettings
+
             else
               b1.use action_resume
             end
           end
+
         end
       end
 
@@ -112,7 +120,7 @@ module VagrantPlugins
 
             b1.use ConnectOpenStack
             b1.use Provision
-            b1.use SyncFolders
+
           end
         end
       end
@@ -134,6 +142,12 @@ module VagrantPlugins
                 b2.use HardRebootServer
               end
             end
+
+            b1.use PrepareNFSValidIds
+            b1.use SyncedFolderCleanup
+            b1.use SyncedFolders
+            b1.use PrepareNFSSettings
+
           end
         end
       end
@@ -170,7 +184,11 @@ module VagrantPlugins
 
             b1.use ConnectOpenStack
             b1.use ResumeServer
-            b1.use SyncFolders
+
+            b1.use PrepareNFSValidIds
+            b1.use SyncedFolderCleanup
+            b1.use SyncedFolders
+            b1.use PrepareNFSSettings
           end
         end
       end
@@ -224,6 +242,7 @@ module VagrantPlugins
         end
       end
 
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectOpenStack, action_root.join("connect_openstack")
@@ -244,12 +263,13 @@ module VagrantPlugins
       autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
       autoload :MessageServerRunning, action_root.join("message_server_running")
       autoload :PauseServer, action_root.join("pause_server")
+      autoload :PrepareNFSSettings, action_root.join("prepare_nfs_settings")
+      autoload :PrepareNFSValidIds, action_root.join("prepare_nfs_valid_ids")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :RebootServer, action_root.join("reboot_server")
       autoload :ResumeServer, action_root.join("resume_server")
       autoload :SuspendServer, action_root.join("suspend_server")      
-      autoload :SyncFolders, action_root.join("sync_folders")
       autoload :TakeSnapshot, action_root.join("take_snapshot")
       autoload :WaitForState, action_root.join("wait_for_state")
       autoload :WaitForTask, action_root.join("wait_for_task")

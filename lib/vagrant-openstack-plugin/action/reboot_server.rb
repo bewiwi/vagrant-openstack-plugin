@@ -17,6 +17,17 @@ module VagrantPlugins
             # TODO: Validate the fact that we get a server back from the API.
             server = env[:openstack_compute].servers.get(env[:machine].id)
             server.reboot('SOFT')
+
+            env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
+            while true
+              begin
+                # If we're interrupted then just back out
+                break if env[:interrupted]
+                break if env[:machine].communicate.ready?
+              rescue Errno::ENETUNREACH, Errno::EHOSTUNREACH
+              end
+              sleep 2
+            end
           end
 
           @app.call(env)
