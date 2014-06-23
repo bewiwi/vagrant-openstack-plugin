@@ -36,7 +36,7 @@ module VagrantPlugins
         # @param [Machine] machine
         # @return [String]
         def read_host_ip
-
+          ip=nil
           #Get First private ip
           Socket.ip_address_list.detect do |intf|
             if intf.ipv4_private?
